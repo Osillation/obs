@@ -1,0 +1,19 @@
+# stacks/helm/otel-collector/values.base.yaml
+# Uses opentelemetry-collector Helm chart
+# helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+
+mode: deployment
+replicaCount: 1
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+  tag: "0.100.0"
+
+resources:
+  requests:
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+# Config is mounted from a ConfigMap built by deploy.sh
+# using the same --config merging logic as docker compose

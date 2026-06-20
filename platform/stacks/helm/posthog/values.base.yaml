@@ -1,0 +1,28 @@
+# stacks/helm/posthog/values.base.yaml
+
+cloud: private
+notificationEmail: admin@osillation.io
+
+web:
+  replicaCount: 1
+  resources:
+    requests:
+      memory: 512Mi
+
+worker:
+  replicaCount: 1
+
+postgresql:
+  persistence:
+    size: 10Gi
+
+clickhouse:
+  persistence:
+    size: 50Gi
+
+ingress:
+  enabled: false  # We use our own nginx
+
+posthog:
+  secureProxySSLHeader: true
+  secureCookies: false  # Nginx handles TLS termination

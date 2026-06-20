@@ -1,0 +1,21 @@
+receivers:
+  redis:
+    endpoint: ${REDIS_HOST}:${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    collection_interval: 10s
+    metrics:
+      redis.clients.connected:
+        enabled: true
+      redis.memory.used:
+        enabled: true
+      redis.commands.processed:
+        enabled: true
+      redis.keyspace.hits:
+        enabled: true
+      redis.keyspace.misses:
+        enabled: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [redis]

@@ -1,0 +1,11 @@
+receivers:
+  docker_stats:
+    endpoint: unix:///var/run/docker.sock
+    collection_interval: 10s
+    timeout: 20s
+    provide_per_core_cpu_metrics: false
+
+service:
+  pipelines:
+    metrics:
+      receivers: [docker_stats]

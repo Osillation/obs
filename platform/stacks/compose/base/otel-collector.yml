@@ -1,0 +1,31 @@
+name: obs
+
+services:
+  obs-otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.100.0
+    container_name: obs-otel-collector
+    networks:
+      - obs-network
+    volumes:
+      - ${OBS_PLATFORM_DIR}/config/otel:/etc/otelcol:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST:-}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_OTEL_USER=${POSTGRES_OTEL_USER:-}
+      - POSTGRES_OTEL_PASSWORD=${POSTGRES_OTEL_PASSWORD:-}
+      - POSTGRES_DB=${POSTGRES_DB:-}
+      - REDIS_HOST=${REDIS_HOST:-}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - MONGO_HOST=${MONGO_HOST:-}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_OTEL_USER=${MONGO_OTEL_USER:-}
+      - MONGO_OTEL_PASSWORD=${MONGO_OTEL_PASSWORD:-}
+    restart: unless-stopped
+
+networks:
+  obs-network:
+    name: obs-network
+    driver: bridge

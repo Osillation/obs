@@ -1,0 +1,18 @@
+receivers:
+  hostmetrics:
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      memory:
+      disk:
+      network:
+      load:
+      filesystem:
+        exclude_mount_points:
+          mount_points: [/proc/*, /sys/*, /dev/*, /run/lock]
+          match_type: regexp
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]

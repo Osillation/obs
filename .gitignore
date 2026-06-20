@@ -1,0 +1,6 @@
+obs
+dist/
+*.hash
+clients/*/tls/*.key
+clients/*/tls/ca.key
+clients/*/.ca/

@@ -1,0 +1,14 @@
+name: obs
+
+services:
+  obs-otel-collector:
+    networks:
+      - obs-network
+      - client-app-network
+
+networks:
+  obs-network:
+    name: obs-network
+  client-app-network:
+    name: ${CLIENT_APP_NETWORK}
+    external: true

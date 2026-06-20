@@ -1,0 +1,69 @@
+worker_processes auto;
+events {
+  worker_connections 1024;
+}
+
+http {
+  include       mime.types;
+  default_type  application/octet-stream;
+  sendfile      on;
+  keepalive_timeout 65;
+
+  # ── Dashboard — mTLS + IP ACL ─────────────────────────────────────────────
+  server {
+    listen 443 ssl;
+    server_name dashboard.OBS_CLIENT_DOMAIN;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_certificate     /etc/nginx/tls/server.crt;
+    ssl_certificate_key /etc/nginx/tls/server.key;
+
+    include /etc/nginx/snippets/mtls.conf;
+    include /etc/nginx/snippets/ip-acl.conf;
+
+    location /signoz/ {
+      proxy_pass http://obs-frontend:3301/;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    }
+
+    location /posthog/ {
+      proxy_pass http://obs-posthog-web:8000/;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+    }
+  }
+
+  # ── Telemetry Ingestion — TLS + token ─────────────────────────────────────
+  server {
+    listen 443 ssl;
+    server_name ingest.OBS_CLIENT_DOMAIN;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_certificate     /etc/nginx/tls/server.crt;
+    ssl_certificate_key /etc/nginx/tls/server.key;
+
+    # Token check — value substituted by deploy.sh (no $ so nginx doesn't interpret it)
+    if ($http_x_obs_token != "OBS_INGEST_TOKEN_VALUE") {
+      return 401 "Unauthorized";
+    }
+
+    # OTel HTTP ingestion (from Vercel proxy route)
+    location /v1/ {
+      proxy_pass http://obs-otel-collector:4318/v1/;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+    }
+
+    # PostHog event ingestion (from Vercel proxy route)
+    location /ph/ {
+      proxy_pass http://obs-posthog-web:8000/;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+    }
+  }
+}

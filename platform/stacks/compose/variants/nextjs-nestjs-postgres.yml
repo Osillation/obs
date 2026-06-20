@@ -1,0 +1,18 @@
+name: obs
+
+# Adds the client's app network to the OTel collector so it can
+# reach nestjs and postgres containers by hostname.
+# CLIENT_APP_NETWORK must be set in config.env (usually the project name + _default)
+
+services:
+  obs-otel-collector:
+    networks:
+      - obs-network
+      - client-app-network
+
+networks:
+  obs-network:
+    name: obs-network
+  client-app-network:
+    name: ${CLIENT_APP_NETWORK}
+    external: true

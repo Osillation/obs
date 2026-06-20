@@ -1,0 +1,31 @@
+# stacks/helm/signoz/values.base.yaml
+# Override values for Osillation deployments. Full schema: helm show values signoz/signoz
+
+global:
+  storageClass: standard
+
+clickhouse:
+  persistence:
+    size: 50Gi
+
+queryService:
+  resources:
+    requests:
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
+frontend:
+  service:
+    type: ClusterIP  # Exposed via ingress/nginx, not LoadBalancer
+
+otelCollector:
+  resources:
+    requests:
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+# Telemetry to SigNoz disabled — we're self-hosting
+signoz:
+  telemetryEnabled: false

@@ -1,0 +1,24 @@
+name: obs
+
+services:
+  obs-nginx:
+    image: nginx:1.25-alpine
+    container_name: obs-nginx
+    networks:
+      - obs-network
+    ports:
+      - "443:443"
+    volumes:
+      - ${OBS_PLATFORM_DIR}/config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${OBS_CLIENT_DIR}/tls/server.crt:/etc/nginx/tls/server.crt:ro
+      - ${OBS_CLIENT_DIR}/tls/server.key:/etc/nginx/tls/server.key:ro
+      - ${OBS_CLIENT_DIR}/tls/ca.crt:/etc/nginx/tls/ca.crt:ro
+      - ${OBS_CLIENT_DIR}/tls:/etc/nginx/tls/employees:ro
+    restart: unless-stopped
+    depends_on:
+      - obs-otel-collector
+
+networks:
+  obs-network:
+    name: obs-network
+    driver: bridge

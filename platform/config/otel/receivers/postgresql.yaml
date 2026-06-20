@@ -1,0 +1,16 @@
+receivers:
+  postgresql:
+    endpoint: ${POSTGRES_HOST}:${POSTGRES_PORT}
+    transport: tcp
+    username: ${POSTGRES_OTEL_USER}
+    password: ${POSTGRES_OTEL_PASSWORD}
+    databases:
+      - ${POSTGRES_DB}
+    collection_interval: 10s
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [postgresql]

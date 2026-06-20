@@ -1,0 +1,14 @@
+# Deployment configuration for this client
+# Most fields are auto-detected by detect.sh; override here if needed.
+
+# mode: compose | helm
+# If not set, detect.sh determines this from the project directory.
+mode:
+
+# stack: detected variant name (e.g. nextjs-nestjs-postgres-redis)
+# If not set, detect.sh builds this from detected frameworks + databases.
+stack:
+
+# otel_receivers: list of receivers to load in addition to base + auto-detected
+# Rarely needed — detection handles this automatically.
+extra_receivers: []

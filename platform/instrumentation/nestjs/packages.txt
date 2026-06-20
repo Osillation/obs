@@ -1,0 +1,14 @@
+# Add these to the NestJS service package.json dependencies:
+# npm install \
+#   @opentelemetry/sdk-node \
+#   @opentelemetry/auto-instrumentations-node \
+#   @opentelemetry/exporter-trace-otlp-grpc \
+#   @opentelemetry/exporter-metrics-otlp-grpc \
+#   @opentelemetry/sdk-metrics \
+#   @opentelemetry/resources \
+#   @opentelemetry/semantic-conventions
+
+# Add to service .env:
+# OTEL_EXPORTER_OTLP_ENDPOINT=http://obs-otel-collector:4317
+# OTEL_SERVICE_NAME=your-service-name
+# OTEL_SERVICE_NAMESPACE=client-name

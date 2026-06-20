@@ -1,0 +1,104 @@
+# stacks/compose/base/signoz.yml
+# Parameterized SigNoz stack. Based on SigNoz official compose.
+# Ref: https://github.com/SigNoz/signoz/blob/main/deploy/docker/docker-compose.yaml
+
+name: obs
+
+services:
+  zookeeper-1:
+    image: bitnami/zookeeper:3.7.1
+    container_name: obs-zookeeper
+    hostname: zookeeper-1
+    networks:
+      - obs-network
+    environment:
+      - ZOO_SERVER_ID=1
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_AUTOPURGE_INTERVAL=1
+    restart: unless-stopped
+    volumes:
+      - zookeeper-data:/bitnami/zookeeper
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.11.1-alpine
+    container_name: obs-clickhouse
+    hostname: clickhouse
+    networks:
+      - obs-network
+    depends_on:
+      - zookeeper-1
+    environment:
+      - CLICKHOUSE_DB=signoz_metrics
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  signoz-otel-collector:
+    image: signoz/signoz-otel-collector:0.102.5
+    container_name: obs-signoz-otel-collector
+    networks:
+      - obs-network
+    depends_on:
+      - clickhouse
+    command:
+      - "--config=/etc/otel-collector-config.yaml"
+    restart: unless-stopped
+
+  query-service:
+    image: signoz/query-service:0.42.0
+    container_name: obs-query-service
+    hostname: query-service
+    networks:
+      - obs-network
+    depends_on:
+      - clickhouse
+    environment:
+      - ClickHouseUrl=tcp://clickhouse:9000/?database=signoz_metrics
+      - ALERTMANAGER_API_PREFIX=http://alertmanager:9093/api/
+      - SIGNOZ_LOCAL_DB_PATH=/var/lib/signoz/signoz.db
+      - DASHBOARDS_PATH=/etc/dashboards
+      - STORAGE=clickhouse
+      - GODEBUG=netdns=go
+      - TELEMETRY_ENABLED=false
+      - DEPLOYMENT_TYPE=docker-standalone-amd
+    volumes:
+      - signoz-db:/var/lib/signoz
+    restart: unless-stopped
+
+  alertmanager:
+    image: signoz/alertmanager:0.23.7
+    container_name: obs-alertmanager
+    networks:
+      - obs-network
+    depends_on:
+      - query-service
+    restart: unless-stopped
+    volumes:
+      - alertmanager-data:/data
+
+  frontend:
+    image: signoz/frontend:0.42.0
+    container_name: obs-frontend
+    networks:
+      - obs-network
+    depends_on:
+      - query-service
+    environment:
+      - NGINX_BACKEND_URL=http://query-service:8080
+    restart: unless-stopped
+    ports: []
+
+networks:
+  obs-network:
+    name: obs-network
+    driver: bridge
+
+volumes:
+  zookeeper-data:
+  clickhouse-data:
+  signoz-db:
+  alertmanager-data:

@@ -25,10 +25,10 @@ builds:
 
 archives:
   - id: obs
-    format: tar.gz
+    formats: [tar.gz]
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     name_template: "obs_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
@@ -44,13 +44,13 @@ changelog:
       - "^test:"
       - "^chore:"
 
-brews:
+homebrew:
   - name: obs
-    homepage: https://github.com/osillation/obs
+    homepage: https://github.com/Osillation/obs
     description: "Open-source observability stack CLI (SigNoz + PostHog)"
     license: MIT
     repository:
-      owner: osillation
+      owner: Osillation
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     install: |

@@ -11,21 +11,26 @@ Bundles SigNoz (APM, traces, logs, metrics) + PostHog (session replay, analytics
 
 ## Install
 
+**macOS / Linux — Homebrew:**
 ```bash
-# macOS / Linux (Homebrew)
 brew install osillation/tap/obs
+```
 
-# Go toolchain
+**macOS / Linux — one-liner (no Homebrew required):**
+```bash
+curl -fsSL https://github.com/Osillation/obs/releases/latest/download/obs_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz | tar xz && sudo mv obs /usr/local/bin/
+```
+
+**Go toolchain:**
+```bash
 go install github.com/osillation/obs@latest
-
-# curl (no Go required)
-curl -fsSL https://get.obs.sh | sh
 ```
 
 **Windows (PowerShell — requires WSL 2):**
 ```powershell
-# Download from https://github.com/Osillation/obs/releases/latest
-# and add to your PATH, then run all obs commands from PowerShell or CMD.
+# Download obs_windows_amd64.zip from:
+# https://github.com/Osillation/obs/releases/latest
+# Extract and add obs.exe to your PATH.
 ```
 
 ## Quick Start (local dashboard)

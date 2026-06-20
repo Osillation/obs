@@ -1,6 +1,11 @@
 obs
 dist/
 *.hash
+# TLS private keys and CA material — never commit
 clients/*/tls/*.key
+clients/*/tls/*.pem
 clients/*/tls/ca.key
 clients/*/.ca/
+# Catch-all for any key material outside clients tree
+*.key
+*.pem
